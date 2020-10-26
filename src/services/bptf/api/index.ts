@@ -1,5 +1,5 @@
 import { fetch } from '../../../api/fetch';
-import { getCurrenciesEndpoint, getUserListingsEndpoint } from './endpoints';
+import { getCurrenciesEndpoint, getUserListingsEndpoint, heartbeatEndpoint } from './endpoints';
 import { configData } from '../../../api/config';
 import { TGetItemPricesResponse, TGetUserListingsResponse } from './types';
 import { EListingIntent } from '../../../types/enums';
@@ -25,5 +25,13 @@ export const bpTfApi = {
   getUserSellListings: async () => {
     const { listings } = await bpTfApi.getUserListings();
     return listings.filter((listing) => listing.intent === EListingIntent.sell);
+  },
+
+  heartbeat: async () => {
+    return fetch.post(heartbeatEndpoint, {
+      method: 'alive',
+      steamid: configData.steamid,
+      token: configData.bptfAccessToken,
+    });
   },
 };

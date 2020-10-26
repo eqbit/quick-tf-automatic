@@ -7,4 +7,5 @@ export const configData = {
   bptfAccessToken: config.bptfAccessToken,
   bptfApiKey: config.bptfApiKey,
   telegramApiToken: config.telegramApiToken,
+  steamid: config.steamid,
 };
