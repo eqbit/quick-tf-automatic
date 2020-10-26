@@ -19,5 +19,31 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+        "import/prefer-default-export": 0,
+        "consistent-return": 0,
+        "@typescript-eslint/ban-types": 0,
+        "@typescript-eslint/explicit-module-boundary-types": 0,
+        "@typescript-eslint/no-explicit-any": 0,
+        "no-console": 0,
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never"
+            }
+        ],
+        "implicit-arrow-linebreak": 0,
+        "arrow-body-style": 0,
+        "camelcase": 0,
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".ts"]
+            }
+        }
     }
 };

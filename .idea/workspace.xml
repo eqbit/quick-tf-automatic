@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fb84347e-2a92-49cb-856c-c47b430c692c" name="Default Changelist" comment="" />
+    <list default="true" id="fb84347e-2a92-49cb-856c-c47b430c692c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/config/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/config/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/fetch/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/bptf/api/endpoints.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/bptf/api/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/bptf/api/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/currency.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/enums.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintrc.js" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,10 +37,12 @@
     <dismissed value="$PROJECT_DIR$/package.json" />
   </component>
   <component name="ProjectId" id="1jNQfDjQdcMf0BZzP6eu8E4UTQB" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -38,6 +56,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/src/services/bptf/api" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -64,7 +84,8 @@
       <option name="presentableId" value="Default" />
       <updated>1603642170826</updated>
       <workItem from="1603642172030" duration="1046000" />
-      <workItem from="1603643226733" duration="1222000" />
+      <workItem from="1603643226733" duration="1677000" />
+      <workItem from="1603700416589" duration="4444000" />
     </task>
     <servers />
   </component>
@@ -76,7 +97,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
