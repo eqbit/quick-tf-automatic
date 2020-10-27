@@ -3,4 +3,6 @@ export type TConfigFields = {
   bptfApiKey: string;
   telegramApiToken: string;
   steamid: string;
+  steamguard: string;
+  oAuthToken: string;
 };
