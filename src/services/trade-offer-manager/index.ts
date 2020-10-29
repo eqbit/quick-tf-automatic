@@ -3,6 +3,8 @@ import * as SteamCommunity from 'steamcommunity';
 import { getCookies, savePollData } from '../../utils/fs';
 import { TRADE_OFFER_MANAGER_POLL_INTERVAL } from '../../constants';
 import { TTradeOffer } from './types';
+import { offerStateToHumanReadable } from './utils';
+import { convertToTfItem } from '../tf/utils';
 
 export class TradeOfferManager {
   private manager: TradeOfferManagerProvider;
@@ -16,7 +18,7 @@ export class TradeOfferManager {
     });
   }
 
-  private async setCookies() {
+  private setCookies = async () => {
     const cookies = await getCookies();
 
     return new Promise((resolve, reject) => {
@@ -29,19 +31,38 @@ export class TradeOfferManager {
     });
   }
 
-  public async init() {
+  public init = async () => {
     await this.setCookies();
 
     this.manager.on('newOffer', this.handleOffer);
-    this.manager.on('receivedOfferChanged', this.handleOfferChange);
+    this.manager.on('receivedOfferChanged', this.handleOfferStateChange);
     this.manager.on('pollData', savePollData);
-  }
+  };
 
-  private handleOffer(rawOffer: TTradeOffer) {
-    console.log(rawOffer.itemsToGive[0].owner_actions);
-  }
+  private reachItemsFromOffer = (rawOffer:TTradeOffer) => {
+    const ourItems = rawOffer.itemsToGive.map(convertToTfItem);
+    const theirItems = rawOffer.itemsToReceive.map(convertToTfItem);
+    return [ourItems, theirItems];
+  };
 
-  private handleOfferChange(offer) {
-    console.log(offer);
-  }
+  private handleOffer = (rawOffer: TTradeOffer) => {
+    const [ourItems, theirItems] = this.reachItemsFromOffer(rawOffer);
+    console.log(ourItems);
+    console.log(theirItems);
+  };
+
+  private acceptOffer = (offer) => {
+    return new Promise((resolve, reject) => {
+      offer.accept((error, status) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(status);
+      });
+    });
+  };
+
+  private handleOfferStateChange = (offer: TTradeOffer) => {
+    console.log(`Offer #${offer.id} changed: ${offerStateToHumanReadable(offer.state)}`);
+  };
 }

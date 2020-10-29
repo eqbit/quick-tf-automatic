@@ -38,6 +38,7 @@ module.exports = {
         "implicit-arrow-linebreak": 0,
         "arrow-body-style": 0,
         "camelcase": 0,
+        "class-methods-use-this": 0,
     },
     "settings": {
         "import/resolver": {
