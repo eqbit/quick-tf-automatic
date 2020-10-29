@@ -1,5 +1,5 @@
-import { steam } from './api/steam';
+import { Controller } from './services/controller';
 
-steam.init().then(() => {
-  console.log('Success');
-});
+const controller = new Controller();
+
+controller.init();

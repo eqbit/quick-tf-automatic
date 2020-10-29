@@ -1,6 +1,6 @@
 import * as SteamCommunity from 'steamcommunity';
-import { configData, saveConfig } from '../config';
-import { getSteamAccountDetails, getSteamGuardCode } from '../command-line-input';
+import { configData, saveConfig } from '../../api/config';
+import { getSteamAccountDetails, getSteamGuardCode } from '../../api/command-line-input';
 import { TIsLoggedInResponse } from './types';
 import { saveCookies } from '../../utils/fs';
 
@@ -98,6 +98,8 @@ export class Steam {
       console.log('Failed login to Steam: ', response.error);
     }
   }
-}
 
-export const steam = new Steam();
+  public getCommunity() {
+    return this.steam;
+  }
+}

@@ -2,7 +2,8 @@ import {
   writeFile, readFile as fsReadFile, existsSync, mkdirSync,
 } from 'promise-fs';
 import { dirname } from 'path';
-import { COOKIES_PATH } from '../constants';
+import { COOKIES_PATH, POLLDATA_PATH } from '../constants';
+import { TPollData } from '../services/trade-offer-manager/types';
 
 export const saveFile = async (path: string, data: any) => {
   const dirName = dirname(path);
@@ -26,3 +27,10 @@ export const saveCookies = async (cookies: Array<string>) => {
 
 export const getCookies = async () =>
   readFile<Array<string>>(COOKIES_PATH);
+
+export const savePollData = async (pollData) => {
+  await saveFile(POLLDATA_PATH, pollData);
+};
+
+export const getPollData = async () =>
+  readFile<TPollData>(POLLDATA_PATH);
