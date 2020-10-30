@@ -64,14 +64,32 @@ export class Controller {
 
   private handleNewTradeOffer = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
     const rawItemsToBuy = this.tfComparator.extractItemsFromOffer(theirItems);
+    const rawItemsToSell = this.tfComparator.extractItemsFromOffer(ourItems);
+
+    if (rawItemsToBuy.length && rawItemsToSell.length) {
+      console.log('Offer contains items from both sides. Skipping...');
+      return;
+    }
+
+    const fitSellListings = this.tfComparator.findSellListings(
+      this.getSellListings(),
+      ourItems,
+    );
+
+    if (rawItemsToSell.length && fitSellListings.length) {
+      return this.processSellOrder({ ourItems, theirItems, rawOffer });
+    }
+
     const fitBuyListings = this.tfComparator.findBuyListings(
       this.getBuyListings(),
       theirItems,
     );
 
     if (rawItemsToBuy.length && fitBuyListings.length) {
-      this.processBuyOrder({ ourItems, theirItems, rawOffer });
+      return this.processBuyOrder({ ourItems, theirItems, rawOffer });
     }
+
+    console.log('Offer doesn\'t math any criteria. Skipping...');
   };
 
   private processBuyOrder = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
@@ -88,22 +106,21 @@ export class Controller {
       metal: 0,
     };
 
-    let containsExtraStuff = false;
+    let containsExtraItems = false;
 
     rawItemsToBuy.forEach((item) => {
       const listing = this.tfComparator.findMatchingListing(fitBuyListings, item);
-      if (!listing) {
-        containsExtraStuff = true;
-        return;
-      }
-
       const currency = this.tfComparator.extractCurrencyFromListing(listing);
+
+      if (!currency) {
+        containsExtraItems = true;
+      }
 
       priceWePay.keys += currency.keys;
       priceWePay.metal = Math.floor(priceWePay.metal * 100 + currency.metal * 100) / 100;
     });
 
-    if (containsExtraStuff) {
+    if (containsExtraItems) {
       console.log('Offer contains items we have no buy orders for. Skipping...');
       return;
     }
@@ -121,15 +138,61 @@ export class Controller {
     } else {
       console.log('Asking too much from us. Skipping.');
     }
-  }
+  };
 
-  // private processSellOrder = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
-  //   const fitSellListings = this.tfComparator.findSellListings(
-  //     this.getSellListings(),
-  //     ourItems,
-  //   );
-  //   const rawItemsToSell = this.tfComparator.extractItemsFromOffer(ourItems);
-  //   const rawOurCurrency = this.tfComparator.extractCurrencyFromOffer(ourItems);
-  //   const rawTheirCurrency = this.tfComparator.extractCurrencyFromOffer(theirItems);
-  // }
+  private processSellOrder = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
+    const rawOurCurrency = this.tfComparator.extractCurrencyFromOffer(ourItems);
+
+    if (rawOurCurrency.metal || rawOurCurrency.keys) {
+      console.log('Unexpectedly asking currency from our side. Skipping...');
+      return;
+    }
+
+    const fitSellListings = this.tfComparator.findSellListings(
+      this.getSellListings(),
+      ourItems,
+    );
+
+    const priceTheyPay = this.tfComparator.extractCurrencyFromOffer(theirItems);
+    const priceWeAsk = {
+      keys: 0,
+      metal: 0,
+    };
+
+    const rawItemsToSell = this.tfComparator.extractItemsFromOffer(ourItems);
+
+    let containsExtraItems = false;
+
+    rawItemsToSell.forEach((item) => {
+      const listing = this.tfComparator.findMatchingSellListing(fitSellListings, item);
+      const currency = this.tfComparator.extractCurrencyFromListing(listing);
+
+      if (!currency) {
+        containsExtraItems = true;
+        return;
+      }
+
+      priceWeAsk.keys += currency.keys || 0;
+      priceWeAsk.metal = Math.floor(priceWeAsk.metal * 100 + currency.metal * 100) / 100;
+    });
+
+    if (containsExtraItems) {
+      console.log('Trying to buy an item we don\'t sell. Skipping...');
+      return;
+    }
+
+    if (
+      priceTheyPay.keys >= priceWeAsk.keys
+      && priceTheyPay.metal >= priceWeAsk.metal
+    ) {
+      console.log(`Accepting offer #${rawOffer.id}.`);
+      this.manager.acceptOffer(rawOffer).then(() => {
+        console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
+      }).catch((error) => {
+        console.log(`Error accepting offer #${rawOffer.id}: `, error);
+      });
+    } else {
+      console.log('Paying less than we ask. Skipping.');
+    }
+  }
 }

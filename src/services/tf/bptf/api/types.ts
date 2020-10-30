@@ -40,6 +40,12 @@ export type TUserListing = {
     quality: number;
     attributes: unknown[];
     name: string;
+    id?: number;
+    original_id?: number;
+    level?: number;
+    inventory?: number;
+    quantity?: number;
+    origin?: number;
   };
   appid: number;
   currencies: TCurrency;

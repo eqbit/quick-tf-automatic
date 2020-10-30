@@ -20,25 +20,23 @@ export class BpTfComparator {
     const result: TUserListing[] = [];
 
     theirItems.forEach((theirItem) => {
-      const buyListing = this.findMatchingListing(buyListings, theirItem);
-
-      if (buyListing) {
-        result.push(buyListing);
-      }
+      result.push(this.findMatchingListing(buyListings, theirItem));
     });
 
     return result;
+  };
+
+  public findMatchingSellListing = (sellListings: TUserListing[], item: TTfItem) => {
+    return sellListings.find((listing) => {
+      return listing.item.id === item.id;
+    });
   };
 
   public findSellListings = (sellListings: TUserListing[], ourItems: TTfItem[]) => {
     const result: TUserListing[] = [];
 
     ourItems.forEach((ourItem) => {
-      const sellListing = this.findMatchingListing(sellListings, ourItem);
-
-      if (sellListing) {
-        result.push(sellListing);
-      }
+      result.push(this.findMatchingSellListing(sellListings, ourItem));
     });
 
     return result;
@@ -79,6 +77,6 @@ export class BpTfComparator {
   };
 
   public extractCurrencyFromListing = (listing: TUserListing) => {
-    return listing.currencies;
+    return listing?.currencies;
   }
 }

@@ -26,7 +26,7 @@ export const getCleanUnusualName = (rawItem: TEconItem) => {
 export const convertToTfItem = (rawItem: TEconItem): TTfItem => {
   try {
     return {
-      id: rawItem.id,
+      id: Number(rawItem.id),
       name: getCleanUnusualName(rawItem),
       quality: Number(rawItem.app_data.quality) || 0,
       slot: rawItem.app_data.slot,

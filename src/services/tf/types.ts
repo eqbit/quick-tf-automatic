@@ -1,5 +1,5 @@
 export type TTfItem = {
-  id: string;
+  id: number;
   name: string;
   quality: number;
   slot: string;
