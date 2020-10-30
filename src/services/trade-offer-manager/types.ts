@@ -1,3 +1,6 @@
+import * as SteamCommunity from 'steamcommunity';
+import { TTradeOfferHandlerOptions } from '../controller/types';
+
 export type TEconItem = {
   appid: number;
   contextid: string;
@@ -101,4 +104,9 @@ export type TPollData = {
   received: Record<string, number>;
   timestamps: Record<string, number>;
   offerSince: number;
+};
+
+export type TTradeOfferManagerConstructor = {
+  steam: SteamCommunity;
+  onNewOffer: (data: TTradeOfferHandlerOptions) => void;
 };

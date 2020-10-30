@@ -12,11 +12,22 @@ export const getParticleEffect = (rawItem: TEconItem) => {
   return particleDescription.value.slice(18);
 };
 
+export const getCleanUnusualName = (rawItem: TEconItem) => {
+  const name = rawItem.market_hash_name;
+  const { quality } = rawItem.app_data;
+
+  if (quality === '5') {
+    return name.slice(8);
+  }
+
+  return name;
+};
+
 export const convertToTfItem = (rawItem: TEconItem): TTfItem => {
   try {
     return {
       id: rawItem.id,
-      name: rawItem.market_hash_name,
+      name: getCleanUnusualName(rawItem),
       quality: rawItem.app_data.quality || '0',
       slot: rawItem.app_data.slot,
       defindex: rawItem.app_data.def_index,

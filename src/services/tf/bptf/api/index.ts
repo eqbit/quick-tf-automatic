@@ -1,37 +1,35 @@
-import { fetch } from '../../../api/fetch';
+import { TGetItemPricesResponse, TGetUserListingsResponse, TUserListing } from './types';
+import { fetch } from '../../../../api/fetch';
 import { getCurrenciesEndpoint, getUserListingsEndpoint, heartbeatEndpoint } from './endpoints';
-import { configData } from '../../../api/config';
-import { TGetItemPricesResponse, TGetUserListingsResponse } from './types';
-import { EListingIntent } from '../../../types/enums';
+import { configData } from '../../../../api/config';
+import { EListingIntent } from '../../../../types/enums';
 
-export const bpTfApi = {
-  getCurrencies: async () => {
+export class BpTfApi {
+  public getCurrencies = async () => {
     return fetch.get<TGetItemPricesResponse>(getCurrenciesEndpoint, {
       key: configData.bptfApiKey,
     });
-  },
+  };
 
-  getUserListings: async () => {
+  public getUserListings = async () => {
     return fetch.get<TGetUserListingsResponse>(getUserListingsEndpoint, {
       token: configData.bptfAccessToken,
     });
-  },
+  };
 
-  getUserBuyListings: async () => {
-    const { listings } = await bpTfApi.getUserListings();
+  public getUserBuyListings = ({ listings }: TGetUserListingsResponse): TUserListing[] => {
     return listings.filter((listing) => listing.intent === EListingIntent.buy);
-  },
+  };
 
-  getUserSellListings: async () => {
-    const { listings } = await bpTfApi.getUserListings();
+  public getUserSellListings = ({ listings }: TGetUserListingsResponse): TUserListing[] => {
     return listings.filter((listing) => listing.intent === EListingIntent.sell);
-  },
+  };
 
-  heartbeat: async () => {
+  public heartbeat = async () => {
     return fetch.post(heartbeatEndpoint, {
       method: 'alive',
       steamid: configData.steamid,
       token: configData.bptfAccessToken,
     });
-  },
-};
+  };
+}

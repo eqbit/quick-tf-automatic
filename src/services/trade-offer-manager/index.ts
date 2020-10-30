@@ -1,21 +1,25 @@
 import * as TradeOfferManagerProvider from 'steam-tradeoffer-manager';
-import * as SteamCommunity from 'steamcommunity';
 import { getCookies, savePollData } from '../../utils/fs';
 import { TRADE_OFFER_MANAGER_POLL_INTERVAL } from '../../constants';
-import { TTradeOffer } from './types';
+import { TTradeOffer, TTradeOfferManagerConstructor } from './types';
 import { offerStateToHumanReadable } from './utils';
 import { convertToTfItem } from '../tf/utils';
+import { TTradeOfferHandlerOptions } from '../controller/types';
 
 export class TradeOfferManager {
   private manager: TradeOfferManagerProvider;
 
-  constructor(steam: SteamCommunity) {
+  private readonly onNewOffer: (data: TTradeOfferHandlerOptions) => void;
+
+  constructor({ steam, onNewOffer }: TTradeOfferManagerConstructor) {
     this.manager = new TradeOfferManagerProvider({
       language: 'en',
       community: steam,
       domain: 'backpack.tf',
       pollInterval: TRADE_OFFER_MANAGER_POLL_INTERVAL,
     });
+
+    this.onNewOffer = onNewOffer;
   }
 
   private setCookies = async () => {
@@ -29,7 +33,7 @@ export class TradeOfferManager {
         resolve();
       });
     });
-  }
+  };
 
   public init = async () => {
     await this.setCookies();
@@ -47,13 +51,12 @@ export class TradeOfferManager {
 
   private handleOffer = (rawOffer: TTradeOffer) => {
     const [ourItems, theirItems] = this.reachItemsFromOffer(rawOffer);
-    console.log(ourItems);
-    console.log(theirItems);
+    this.onNewOffer({ ourItems, theirItems, rawOffer });
   };
 
-  private acceptOffer = (offer) => {
+  public acceptOffer = (rawOffer: TTradeOffer) => {
     return new Promise((resolve, reject) => {
-      offer.accept((error, status) => {
+      rawOffer.accept((error, status) => {
         if (error) {
           reject(error);
         }

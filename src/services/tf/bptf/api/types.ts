@@ -1,4 +1,4 @@
-import { TCurrency } from '../../../types/currency';
+import { TCurrency } from '../../../../types/currency';
 
 export type TGetPricesItems = {
   [name: string]: {
@@ -32,23 +32,25 @@ export type TGetItemPricesResponse = {
   }
 };
 
+export type TUserListing = {
+  id: string;
+  steamid: string;
+  item: {
+    defindex: number;
+    quality: number;
+    attributes: unknown[];
+    name: string;
+  };
+  appid: number;
+  currencies: TCurrency;
+  offers: number;
+  buyout: number;
+  details: string;
+  created: number;
+  bump: number;
+  intent: 0 | 1;
+};
+
 export type TGetUserListingsResponse = {
-  listings: {
-    id: string;
-    steamid: string;
-    item: {
-      defindex: number;
-      quality: number;
-      attributes: unknown[];
-      name: string;
-    };
-    appid: number;
-    currencies: TCurrency;
-    offers: number;
-    buyout: number;
-    details: string;
-    created: number;
-    bump: number;
-    intent: 0 | 1;
-  }[]
+  listings: TUserListing[]
 };
