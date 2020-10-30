@@ -24,10 +24,10 @@ export class Controller {
       onNewOffer: this.handleNewTradeOffer,
     });
 
+    this.initLoops();
+
     await this.steam.init();
     await this.manager.init();
-
-    this.initLoops();
   };
 
   private initLoops = async () => {
@@ -63,17 +63,73 @@ export class Controller {
   };
 
   private handleNewTradeOffer = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
-    const buyListings = this.tfComparator.findBuyListings(
+    const rawItemsToBuy = this.tfComparator.extractItemsFromOffer(theirItems);
+    const fitBuyListings = this.tfComparator.findBuyListings(
       this.getBuyListings(),
       theirItems,
     );
 
-    const sellListings = this.tfComparator.findSellListings(
-      this.getSellListings(),
-      ourItems,
+    if (rawItemsToBuy.length && fitBuyListings.length) {
+      this.processBuyOrder({ ourItems, theirItems, rawOffer });
+    }
+  };
+
+  private processBuyOrder = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
+    const fitBuyListings = this.tfComparator.findBuyListings(
+      this.getBuyListings(),
+      theirItems,
     );
 
-    console.log(buyListings);
-    console.log(sellListings);
+    const priceTheyAsk = this.tfComparator.extractCurrencyFromOffer(ourItems);
+    const rawItemsToBuy = this.tfComparator.extractItemsFromOffer(theirItems);
+
+    const priceWePay = {
+      keys: 0,
+      metal: 0,
+    };
+
+    let containsExtraStuff = false;
+
+    rawItemsToBuy.forEach((item) => {
+      const listing = this.tfComparator.findMatchingListing(fitBuyListings, item);
+      if (!listing) {
+        containsExtraStuff = true;
+        return;
+      }
+
+      const currency = this.tfComparator.extractCurrencyFromListing(listing);
+
+      priceWePay.keys += currency.keys;
+      priceWePay.metal = Math.floor(priceWePay.metal * 100 + currency.metal * 100) / 100;
+    });
+
+    if (containsExtraStuff) {
+      console.log('Offer contains items we have no buy orders for. Skipping...');
+      return;
+    }
+
+    if (
+      priceTheyAsk.keys <= priceWePay.keys
+      && priceTheyAsk.metal <= priceWePay.metal
+    ) {
+      console.log(`Accepting offer #${rawOffer.id}.`);
+      this.manager.acceptOffer(rawOffer).then(() => {
+        console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
+      }).catch((error) => {
+        console.log(`Error accepting offer #${rawOffer.id}: `, error);
+      });
+    } else {
+      console.log('Asking too much from us. Skipping.');
+    }
   }
+
+  // private processSellOrder = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
+  //   const fitSellListings = this.tfComparator.findSellListings(
+  //     this.getSellListings(),
+  //     ourItems,
+  //   );
+  //   const rawItemsToSell = this.tfComparator.extractItemsFromOffer(ourItems);
+  //   const rawOurCurrency = this.tfComparator.extractCurrencyFromOffer(ourItems);
+  //   const rawTheirCurrency = this.tfComparator.extractCurrencyFromOffer(theirItems);
+  // }
 }

@@ -28,9 +28,9 @@ export const convertToTfItem = (rawItem: TEconItem): TTfItem => {
     return {
       id: rawItem.id,
       name: getCleanUnusualName(rawItem),
-      quality: rawItem.app_data.quality || '0',
+      quality: Number(rawItem.app_data.quality) || 0,
       slot: rawItem.app_data.slot,
-      defindex: rawItem.app_data.def_index,
+      defindex: Number(rawItem.app_data.def_index),
       particleEffect: getParticleEffect(rawItem),
       isMarketable: rawItem.marketable,
     };

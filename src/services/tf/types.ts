@@ -1,9 +1,9 @@
 export type TTfItem = {
   id: string;
   name: string;
-  quality: string;
+  quality: number;
   slot: string;
-  defindex: string;
+  defindex: number;
   particleEffect: string;
   isMarketable: boolean;
 };
