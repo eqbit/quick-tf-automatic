@@ -11,7 +11,9 @@ export class TradeOfferManager {
 
   private readonly onNewOffer: (data: TTradeOfferHandlerOptions) => void;
 
-  constructor({ steam, onNewOffer }: TTradeOfferManagerConstructor) {
+  private readonly onFail: () => Promise<void>;
+
+  constructor({ steam, onNewOffer, onFail }: TTradeOfferManagerConstructor) {
     this.manager = new TradeOfferManagerProvider({
       language: 'en',
       community: steam,
@@ -20,6 +22,7 @@ export class TradeOfferManager {
     });
 
     this.onNewOffer = onNewOffer;
+    this.onFail = onFail;
   }
 
   private setCookies = async () => {
@@ -43,6 +46,11 @@ export class TradeOfferManager {
     this.manager.on('pollData', savePollData);
   };
 
+  public reInit = async () => {
+    await this.onFail();
+    await this.setCookies();
+  };
+
   private reachItemsFromOffer = (rawOffer:TTradeOffer) => {
     const ourItems = rawOffer.itemsToGive.map(convertToTfItem);
     const theirItems = rawOffer.itemsToReceive.map(convertToTfItem);
@@ -62,6 +70,9 @@ export class TradeOfferManager {
         }
         resolve(status);
       });
+    }).catch(async () => {
+      await this.reInit();
+      this.acceptOffer(rawOffer);
     });
   };
 

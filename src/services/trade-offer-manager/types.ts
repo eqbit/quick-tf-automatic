@@ -109,4 +109,5 @@ export type TPollData = {
 export type TTradeOfferManagerConstructor = {
   steam: SteamCommunity;
   onNewOffer: (data: TTradeOfferHandlerOptions) => void;
+  onFail: () => Promise<void>;
 };

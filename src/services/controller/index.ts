@@ -5,6 +5,7 @@ import { BpTfApi } from '../tf/bptf/api';
 import { LISTINGS_UPDATE_INTERVAL, HEARTBEAT_INTERVAL } from '../../constants';
 import { TTradeOfferHandlerOptions } from './types';
 import { BpTfComparator } from '../tf/bptf/comparator';
+import { BpTfSummarizer } from '../tf/bptf/summarizer';
 
 export class Controller {
   private manager: TradeOfferManager;
@@ -17,17 +18,24 @@ export class Controller {
 
   private tfComparator = new BpTfComparator();
 
+  private bpTfSummarizer = new BpTfSummarizer();
+
   public init = async () => {
     this.steam = new Steam();
     this.manager = new TradeOfferManager({
       steam: this.steam.getCommunity(),
       onNewOffer: this.handleNewTradeOffer,
+      onFail: this.reInit,
     });
 
     this.initLoops();
 
     await this.steam.init();
     await this.manager.init();
+  };
+
+  public reInit = async () => {
+    await this.steam.init();
   };
 
   private initLoops = async () => {
@@ -46,12 +54,10 @@ export class Controller {
 
   private updateUserListings = async () => {
     this.bptfListings = await this.bpTfApi.getUserListings();
-    console.log('Updated backpack.tf listings.');
   };
 
   private heartbeat = async () => {
     await this.bpTfApi.heartbeat();
-    console.log('Heartbeat sent to backpack.tf');
   };
 
   private getBuyListings = () => {
@@ -130,13 +136,27 @@ export class Controller {
       && priceTheyAsk.metal <= priceWePay.metal
     ) {
       console.log(`Accepting offer #${rawOffer.id}.`);
+      console.log(`Buying ${
+        this.bpTfSummarizer.summarizeItems(rawItemsToBuy)
+      } (${
+        this.bpTfSummarizer.summarizeCurrency(priceWePay)
+      } according to our buy listings) for ${
+        this.bpTfSummarizer.summarizeCurrency(priceTheyAsk)
+      }`);
+
       this.manager.acceptOffer(rawOffer).then(() => {
         console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
       }).catch((error) => {
         console.log(`Error accepting offer #${rawOffer.id}: `, error);
       });
     } else {
-      console.log('Asking too much from us. Skipping.');
+      console.log(`According to our buy order listings we are ready to pay ${
+        this.bpTfSummarizer.summarizeCurrency(priceWePay)
+      } for ${
+        this.bpTfSummarizer.summarizeItems(rawItemsToBuy)
+      }. The sellers asks for more: ${
+        this.bpTfSummarizer.summarizeCurrency(priceTheyAsk)
+      }. Skipping...`);
     }
   };
 
@@ -186,13 +206,27 @@ export class Controller {
       && priceTheyPay.metal >= priceWeAsk.metal
     ) {
       console.log(`Accepting offer #${rawOffer.id}.`);
+      console.log(`Selling ${
+        this.bpTfSummarizer.summarizeItems(rawItemsToSell)
+      } (${
+        this.bpTfSummarizer.summarizeCurrency(priceWeAsk)
+      } according to our sell listings) for ${
+        this.bpTfSummarizer.summarizeCurrency(priceTheyPay)
+      }`);
+
       this.manager.acceptOffer(rawOffer).then(() => {
         console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
       }).catch((error) => {
         console.log(`Error accepting offer #${rawOffer.id}: `, error);
       });
     } else {
-      console.log('Paying less than we ask. Skipping.');
+      console.log(`We asking ${
+        this.bpTfSummarizer.summarizeCurrency(priceWeAsk)
+      } for our ${
+        this.bpTfSummarizer.summarizeItems(rawItemsToSell)
+      }. The buyer offers less: ${
+        this.bpTfSummarizer.summarizeCurrency(priceTheyPay)
+      }. Skipping...`);
     }
   }
 }

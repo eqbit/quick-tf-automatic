@@ -11,7 +11,7 @@ import {
 export class BpTfComparator {
   public findMatchingListing = (listings: TUserListing[], item: TTfItem) => {
     return listings.find((listing) => {
-      return listing.item.name === `${item.particleEffect} ${item.name}`
+      return listing?.item?.name === `${item.particleEffect} ${item.name}`
         && listing.item.quality === item.quality;
     });
   };
@@ -77,6 +77,9 @@ export class BpTfComparator {
   };
 
   public extractCurrencyFromListing = (listing: TUserListing) => {
-    return listing?.currencies;
+    return {
+      keys: listing?.currencies?.keys || 0,
+      metal: listing?.currencies?.metal || 0,
+    };
   }
 }
