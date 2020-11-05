@@ -1,6 +1,7 @@
 import { TCurrency } from '../../../../types/currency';
 import { TTfItem } from '../../types';
 import { ItemQualitiesByIndex } from '../../constants';
+import { TSummarizeBuyOrder, TSummarizeSellOrder } from './types';
 
 export class BpTfSummarizer {
   public summarizeCurrency = (currency: TCurrency) =>
@@ -12,5 +13,75 @@ export class BpTfSummarizer {
         ? `${item.particleEffect} `
         : `${ItemQualitiesByIndex[item.quality]}`
     }${item.name}`).join(', ');
-  }
+  };
+
+  public successBuyOrderMessage = (
+    {
+      id,
+      rawItemsToBuy,
+      priceWePay,
+      priceTheyAsk,
+    }: TSummarizeBuyOrder,
+  ) => {
+    console.log(`Accepting offer #${id}.`);
+    console.log(`Buying ${
+      this.summarizeItems(rawItemsToBuy)
+    } (${
+      this.summarizeCurrency(priceWePay)
+    } according to our buy listings) for ${
+      this.summarizeCurrency(priceTheyAsk)
+    }`);
+  };
+
+  public failBuyOrderMessage = (
+    {
+      id,
+      priceWePay,
+      priceTheyAsk,
+      rawItemsToBuy,
+    }: TSummarizeBuyOrder,
+  ) => {
+    console.log(`According to our buy order listings we are ready to pay ${
+      this.summarizeCurrency(priceWePay)
+    } for ${
+      this.summarizeItems(rawItemsToBuy)
+    }. The sellers asks for more: ${
+      this.summarizeCurrency(priceTheyAsk)
+    }. Skipping offer #${id}...`);
+  };
+
+  public successSellOrderMessage = (
+    {
+      id,
+      rawItemsToSell,
+      priceWeAsk,
+      priceTheyPay,
+    }: TSummarizeSellOrder,
+  ) => {
+    console.log(`Accepting offer #${id}.`);
+    console.log(`Selling ${
+      this.summarizeItems(rawItemsToSell)
+    } (${
+      this.summarizeCurrency(priceWeAsk)
+    } according to our sell listings) for ${
+      this.summarizeCurrency(priceTheyPay)
+    }`);
+  };
+
+  public failSellOrderMessage = (
+    {
+      id,
+      rawItemsToSell,
+      priceWeAsk,
+      priceTheyPay,
+    }: TSummarizeSellOrder,
+  ) => {
+    console.log(`We asking ${
+      this.summarizeCurrency(priceWeAsk)
+    } for our ${
+      this.summarizeItems(rawItemsToSell)
+    }. The buyer offers less: ${
+      this.summarizeCurrency(priceTheyPay)
+    }. Skipping offer #${id}...`);
+  };
 }

@@ -135,14 +135,12 @@ export class Controller {
       priceTheyAsk.keys <= priceWePay.keys
       && priceTheyAsk.metal <= priceWePay.metal
     ) {
-      console.log(`Accepting offer #${rawOffer.id}.`);
-      console.log(`Buying ${
-        this.bpTfSummarizer.summarizeItems(rawItemsToBuy)
-      } (${
-        this.bpTfSummarizer.summarizeCurrency(priceWePay)
-      } according to our buy listings) for ${
-        this.bpTfSummarizer.summarizeCurrency(priceTheyAsk)
-      }`);
+      this.bpTfSummarizer.successBuyOrderMessage({
+        id: rawOffer.id,
+        priceTheyAsk,
+        priceWePay,
+        rawItemsToBuy,
+      });
 
       this.manager.acceptOffer(rawOffer).then(() => {
         console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
@@ -150,13 +148,12 @@ export class Controller {
         console.log(`Error accepting offer #${rawOffer.id}: `, error);
       });
     } else {
-      console.log(`According to our buy order listings we are ready to pay ${
-        this.bpTfSummarizer.summarizeCurrency(priceWePay)
-      } for ${
-        this.bpTfSummarizer.summarizeItems(rawItemsToBuy)
-      }. The sellers asks for more: ${
-        this.bpTfSummarizer.summarizeCurrency(priceTheyAsk)
-      }. Skipping...`);
+      this.bpTfSummarizer.failBuyOrderMessage({
+        id: rawOffer.id,
+        priceTheyAsk,
+        priceWePay,
+        rawItemsToBuy,
+      });
     }
   };
 
@@ -205,14 +202,12 @@ export class Controller {
       priceTheyPay.keys >= priceWeAsk.keys
       && priceTheyPay.metal >= priceWeAsk.metal
     ) {
-      console.log(`Accepting offer #${rawOffer.id}.`);
-      console.log(`Selling ${
-        this.bpTfSummarizer.summarizeItems(rawItemsToSell)
-      } (${
-        this.bpTfSummarizer.summarizeCurrency(priceWeAsk)
-      } according to our sell listings) for ${
-        this.bpTfSummarizer.summarizeCurrency(priceTheyPay)
-      }`);
+      this.bpTfSummarizer.successSellOrderMessage({
+        id: rawOffer.id,
+        priceTheyPay,
+        priceWeAsk,
+        rawItemsToSell,
+      });
 
       this.manager.acceptOffer(rawOffer).then(() => {
         console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
@@ -220,13 +215,12 @@ export class Controller {
         console.log(`Error accepting offer #${rawOffer.id}: `, error);
       });
     } else {
-      console.log(`We asking ${
-        this.bpTfSummarizer.summarizeCurrency(priceWeAsk)
-      } for our ${
-        this.bpTfSummarizer.summarizeItems(rawItemsToSell)
-      }. The buyer offers less: ${
-        this.bpTfSummarizer.summarizeCurrency(priceTheyPay)
-      }. Skipping...`);
+      this.bpTfSummarizer.failSellOrderMessage({
+        id: rawOffer.id,
+        priceTheyPay,
+        priceWeAsk,
+        rawItemsToSell,
+      });
     }
   }
 }
