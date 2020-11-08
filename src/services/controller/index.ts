@@ -6,6 +6,7 @@ import { LISTINGS_UPDATE_INTERVAL, HEARTBEAT_INTERVAL } from '../../constants';
 import { TTradeOfferHandlerOptions } from './types';
 import { BpTfComparator } from '../tf/bptf/comparator';
 import { BpTfSummarizer } from '../tf/bptf/summarizer';
+import { TTradeOffer } from '../trade-offer-manager/types';
 
 export class Controller {
   private manager: TradeOfferManager;
@@ -68,7 +69,16 @@ export class Controller {
     return this.bpTfApi.getUserSellListings(this.bptfListings);
   };
 
+  private isInEscrow = (rawOffer: TTradeOffer) => {
+    return Boolean(rawOffer.escrowEnds);
+  };
+
   private handleNewTradeOffer = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
+    if (this.isInEscrow(rawOffer)) {
+      console.log('Escrow is not turned off. Skipping...');
+      return;
+    }
+
     const rawItemsToBuy = this.tfComparator.extractItemsFromOffer(theirItems);
     const rawItemsToSell = this.tfComparator.extractItemsFromOffer(ourItems);
 
