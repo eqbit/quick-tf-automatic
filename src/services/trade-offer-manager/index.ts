@@ -5,6 +5,7 @@ import { TTradeOffer, TTradeOfferManagerConstructor } from './types';
 import { offerStateToHumanReadable } from './utils';
 import { convertToTfItem } from '../tf/utils';
 import { TTradeOfferHandlerOptions } from '../controller/types';
+import { ETradeOfferState } from './data';
 
 export class TradeOfferManager {
   private manager: TradeOfferManagerProvider;
@@ -72,7 +73,9 @@ export class TradeOfferManager {
       });
     }).catch(async () => {
       await this.reInit();
-      this.acceptOffer(rawOffer);
+      if (rawOffer.state === ETradeOfferState.Active) {
+        this.acceptOffer(rawOffer);
+      }
     });
   };
 

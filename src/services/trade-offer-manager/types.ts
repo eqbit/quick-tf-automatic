@@ -71,6 +71,7 @@ export type TTradeOffer = {
   getPartnerInventoryContents:
     (appid: number, contextid: unknown, callback:
       (err: Error, inventory: Array<TEconItem>, currencies: Array<TEconItem>) => void) => void;
+  getUserDetails: (callback: (err, me, them) => void) => void;
   accept: (callback: (err: Error, status: string) => void) => void;
   decline: (callback: (err: Error) => void) => void;
   update: (callback: (err: Error) => void) => void;

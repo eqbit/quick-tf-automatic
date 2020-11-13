@@ -116,6 +116,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/steamid@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/steamid/-/steamid-1.1.0.tgz#116bbf24030153675ad0085ee8656a2b0aa350f3"
+  integrity sha512-gwO3A+roHuUZdrPj8LVcgZcl/xmAIhssuXl8hEvD2/s51mvpuMJa4bAGcGXSps4k4E5pkj3nKMlP/3YbP3vCMg==
+
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"

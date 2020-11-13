@@ -39,6 +39,8 @@ module.exports = {
         "arrow-body-style": 0,
         "camelcase": 0,
         "class-methods-use-this": 0,
+        "lines-between-class-members": 0,
+        "ban-ts-comment": 0,
     },
     "settings": {
         "import/resolver": {

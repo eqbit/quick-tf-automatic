@@ -7,19 +7,21 @@ import { TTradeOfferHandlerOptions } from './types';
 import { BpTfComparator } from '../tf/bptf/comparator';
 import { BpTfSummarizer } from '../tf/bptf/summarizer';
 import { TTradeOffer } from '../trade-offer-manager/types';
+import { TelegramSender } from '../telegram';
+import { configData } from '../../api/config';
+import { getSteamid64 } from '../../utils/get-steamid';
 
 export class Controller {
+  private telegram = new TelegramSender({
+    botApiKey: configData.telegramApiToken,
+    channelName: configData.telegramNotificationChannel,
+  });
   private manager: TradeOfferManager;
-
   private steam: Steam;
-
   private bpTfApi = new BpTfApi();
-
   private bptfListings: TGetUserListingsResponse;
-
   private tfComparator = new BpTfComparator();
-
-  private bpTfSummarizer = new BpTfSummarizer();
+  private bpTfSummarizer = new BpTfSummarizer(this.telegram);
 
   public init = async () => {
     this.steam = new Steam();
@@ -74,8 +76,16 @@ export class Controller {
   };
 
   private handleNewTradeOffer = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
+    this.telegram
+      .sendMessage(`Received a new trade offer from https://backpack.tf/profiles/${getSteamid64(rawOffer.partner)}`);
+
     if (this.isInEscrow(rawOffer)) {
       console.log('Escrow is not turned off. Skipping...');
+      return;
+    }
+
+    if (!ourItems.length || !theirItems.length) {
+      console.log('A gift offer. Skipping...');
       return;
     }
 

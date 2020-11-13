@@ -1,16 +1,15 @@
-import * as c from '../../../config.json';
+import * as config from '../../../config.json';
 import { TConfigFields } from './types';
 import { saveFile } from '../../utils/fs';
 
-const config = c as TConfigFields;
-
-export const configData = {
+export const configData: TConfigFields = {
   bptfAccessToken: config.bptfAccessToken,
   bptfApiKey: config.bptfApiKey,
   telegramApiToken: config.telegramApiToken,
   steamid: config.steamid,
   steamguard: config.steamguard,
   oAuthToken: config.oAuthToken,
+  telegramNotificationChannel: config.telegramNotificationChannel,
 };
 
 export const saveConfig = async (newConfig: Partial<TConfigFields>) => {

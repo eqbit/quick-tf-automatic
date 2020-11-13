@@ -2,8 +2,15 @@ import { TCurrency } from '../../../../types/currency';
 import { TTfItem } from '../../types';
 import { ItemQualitiesByIndex } from '../../constants';
 import { TSummarizeBuyOrder, TSummarizeSellOrder } from './types';
+import { TelegramSender } from '../../../telegram';
 
 export class BpTfSummarizer {
+  protected telegram: TelegramSender;
+
+  constructor(telegram: TelegramSender) {
+    this.telegram = telegram;
+  }
+
   public summarizeCurrency = (currency: TCurrency) =>
     `${currency.keys ? `${currency.keys} keys` : ''} ${currency.metal ? `${currency.metal} ref` : ''}`;
 
@@ -23,14 +30,15 @@ export class BpTfSummarizer {
       priceTheyAsk,
     }: TSummarizeBuyOrder,
   ) => {
-    console.log(`Accepting offer #${id}.`);
-    console.log(`Buying ${
+    const message = `Accepting offer #${id}. Buying ${
       this.summarizeItems(rawItemsToBuy)
     } (${
       this.summarizeCurrency(priceWePay)
     } according to our buy listings) for ${
       this.summarizeCurrency(priceTheyAsk)
-    }`);
+    }`;
+    console.log(message);
+    this.telegram.sendMessage(message);
   };
 
   public failBuyOrderMessage = (
@@ -58,14 +66,15 @@ export class BpTfSummarizer {
       priceTheyPay,
     }: TSummarizeSellOrder,
   ) => {
-    console.log(`Accepting offer #${id}.`);
-    console.log(`Selling ${
+    const message = `Accepting offer #${id}. Selling ${
       this.summarizeItems(rawItemsToSell)
     } (${
       this.summarizeCurrency(priceWeAsk)
     } according to our sell listings) for ${
       this.summarizeCurrency(priceTheyPay)
-    }`);
+    }`;
+    console.log(message);
+    this.telegram.sendMessage(message);
   };
 
   public failSellOrderMessage = (
