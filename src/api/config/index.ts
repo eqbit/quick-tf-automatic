@@ -10,6 +10,7 @@ export const configData: TConfigFields = {
   steamguard: config.steamguard,
   oAuthToken: config.oAuthToken,
   telegramNotificationChannel: config.telegramNotificationChannel,
+  identity_secret: config.identity_secret,
 };
 
 export const saveConfig = async (newConfig: Partial<TConfigFields>) => {

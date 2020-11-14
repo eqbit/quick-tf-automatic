@@ -6,4 +6,5 @@ export type TConfigFields = {
   steamid: string;
   steamguard: string;
   oAuthToken: string;
+  identity_secret: string;
 };

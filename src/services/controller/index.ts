@@ -10,6 +10,7 @@ import { TTradeOffer } from '../trade-offer-manager/types';
 import { TelegramSender } from '../telegram';
 import { configData } from '../../api/config';
 import { getSteamid64 } from '../../utils/get-steamid';
+import { Totp } from '../totp';
 
 export class Controller {
   private telegram = new TelegramSender({
@@ -22,6 +23,7 @@ export class Controller {
   private bptfListings: TGetUserListingsResponse;
   private tfComparator = new BpTfComparator();
   private bpTfSummarizer = new BpTfSummarizer(this.telegram);
+  private totp: Totp;
 
   public init = async () => {
     this.steam = new Steam();
@@ -35,6 +37,12 @@ export class Controller {
 
     await this.steam.init();
     await this.manager.init();
+
+    this.totp = new Totp({
+      steam: this.steam,
+      secret: configData.identity_secret,
+    });
+    this.totp.enable();
   };
 
   public reInit = async () => {
@@ -76,6 +84,11 @@ export class Controller {
   };
 
   private handleNewTradeOffer = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
+    if (rawOffer.isOurOffer) {
+      console.log('Accepting an offer sent by the Owner');
+      this.acceptOffer(rawOffer);
+      return;
+    }
     this.telegram
       .sendMessage(`Received a new trade offer from https://backpack.tf/profiles/${getSteamid64(rawOffer.partner)}`);
 
@@ -162,7 +175,7 @@ export class Controller {
         rawItemsToBuy,
       });
 
-      this.manager.acceptOffer(rawOffer).then(() => {
+      this.acceptOffer(rawOffer).then(() => {
         console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
       }).catch((error) => {
         console.log(`Error accepting offer #${rawOffer.id}: `, error);
@@ -229,7 +242,7 @@ export class Controller {
         rawItemsToSell,
       });
 
-      this.manager.acceptOffer(rawOffer).then(() => {
+      this.acceptOffer(rawOffer).then(() => {
         console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
       }).catch((error) => {
         console.log(`Error accepting offer #${rawOffer.id}: `, error);
@@ -242,5 +255,12 @@ export class Controller {
         rawItemsToSell,
       });
     }
-  }
+  };
+
+  protected acceptOffer = async (rawOffer: TTradeOffer) => {
+    return this.manager.acceptOffer(rawOffer).then(() => {
+      this.totp.addOffer(rawOffer.id);
+      this.totp.check();
+    });
+  };
 }
