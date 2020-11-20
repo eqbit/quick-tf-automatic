@@ -1,8 +1,8 @@
-import { TCurrency } from '../../../../types/currency';
-import { TTfItem } from '../../types';
-import { ItemQualitiesByIndex } from '../../constants';
+import { TCurrency } from '../../../types/currency';
+import { TTfItem } from '../types';
+import { ItemQualitiesByIndex } from '../constants';
 import { TSummarizeBuyOrder, TSummarizeSellOrder } from './types';
-import { TelegramSender } from '../../../telegram';
+import { TelegramSender } from '../../telegram';
 
 export class BpTfSummarizer {
   protected telegram: TelegramSender;

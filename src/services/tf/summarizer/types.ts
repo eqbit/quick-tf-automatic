@@ -1,5 +1,5 @@
-import { TTfItem } from '../../types';
-import { TCurrency } from '../../../../types/currency';
+import { TTfItem } from '../types';
+import { TCurrency } from '../../../types/currency';
 
 export type TSummarizeBuyOrder = {
   id: string;

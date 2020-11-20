@@ -28,7 +28,7 @@ export class BpTfComparator {
 
   public findMatchingSellListing = (sellListings: TUserListing[], item: TTfItem) => {
     return sellListings.find((listing) => {
-      return listing.item.id === item.id;
+      return listing?.item.id === item.id;
     });
   };
 

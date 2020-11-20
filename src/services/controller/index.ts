@@ -2,15 +2,17 @@ import { TradeOfferManager } from '../trade-offer-manager';
 import { Steam } from '../steam';
 import { TGetUserListingsResponse } from '../tf/bptf/api/types';
 import { BpTfApi } from '../tf/bptf/api';
-import { LISTINGS_UPDATE_INTERVAL, HEARTBEAT_INTERVAL } from '../../constants';
+import { HEARTBEAT_INTERVAL, LISTINGS_UPDATE_INTERVAL } from '../../constants';
 import { TTradeOfferHandlerOptions } from './types';
 import { BpTfComparator } from '../tf/bptf/comparator';
-import { BpTfSummarizer } from '../tf/bptf/summarizer';
+import { BpTfSummarizer } from '../tf/summarizer';
 import { TTradeOffer } from '../trade-offer-manager/types';
 import { TelegramSender } from '../telegram';
 import { configData } from '../../api/config';
 import { getSteamid64 } from '../../utils/get-steamid';
 import { Totp } from '../totp';
+import { checkTrade } from '../tfs';
+import { EListingIntent } from '../../types/enums';
 
 export class Controller {
   private telegram = new TelegramSender({
@@ -175,6 +177,14 @@ export class Controller {
         rawItemsToBuy,
       });
 
+      checkTrade({
+        intent: EListingIntent.buy,
+        currency: priceTheyAsk,
+        rawOffer,
+        theirItems,
+        ourItems,
+      });
+
       this.acceptOffer(rawOffer).then(() => {
         console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
       }).catch((error) => {
@@ -240,6 +250,14 @@ export class Controller {
         priceTheyPay,
         priceWeAsk,
         rawItemsToSell,
+      });
+
+      checkTrade({
+        intent: EListingIntent.sell,
+        currency: priceTheyPay,
+        rawOffer,
+        theirItems,
+        ourItems,
       });
 
       this.acceptOffer(rawOffer).then(() => {

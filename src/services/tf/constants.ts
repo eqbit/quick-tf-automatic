@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 export enum EItemQualities {
   Normal = 0,
   Genuine = 1,
