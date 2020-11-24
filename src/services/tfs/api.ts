@@ -9,8 +9,10 @@ export class TfsApi {
       TReportTradeResponse
       >(reportTradeEndpoint, options);
 
-    if (response.status === 'success') {
+    if (response?.status === 'success') {
       console.log('Reported the trade');
+    } else {
+      console.log('Error reporting the trade');
     }
   };
 }
