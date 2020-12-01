@@ -1,6 +1,7 @@
 import { fetch } from '../../api/fetch';
 import { reportTradeEndpoint } from './endpoints';
 import { TReportTradeOptions, TReportTradeResponse } from './types';
+import { logger } from '../logger';
 
 export class TfsApi {
   public reportTrade = async (options: TReportTradeOptions) => {
@@ -10,9 +11,9 @@ export class TfsApi {
       >(reportTradeEndpoint, options);
 
     if (response?.status === 'success') {
-      console.log('Reported the trade');
+      logger.log('Reported the trade');
     } else {
-      console.log('Error reporting the trade');
+      logger.error('Error reporting the trade');
     }
   };
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../../services/logger';
 
 export const fetch = {
 
@@ -11,7 +12,7 @@ export const fetch = {
       const { data } = await axios.get<T>(`${url}${params ? `?${params}` : ''}`);
       return data;
     } catch (e) {
-      console.log(`Error trying GET from ${url}`, e.message);
+      logger.error(`Error trying GET from ${url}`, e.message);
     }
   },
 
@@ -20,7 +21,7 @@ export const fetch = {
       const { data } = await axios.post<T>(url, body, config);
       return data;
     } catch (e) {
-      console.log(`Error trying POST to ${url}`, e.message);
+      logger.error(`Error trying POST to ${url}`, e.message);
     }
   },
 
@@ -32,7 +33,7 @@ export const fetch = {
         data,
       }).then((r) => r.data);
     } catch (e) {
-      console.log(`Error trying DELETE to ${url}`, e.message);
+      logger.error(`Error trying DELETE to ${url}`, e.message);
     }
   },
 };

@@ -3,6 +3,7 @@ import { configData, saveConfig } from '../../api/config';
 import { getSteamAccountDetails, getSteamGuardCode } from '../../api/command-line-input';
 import { TIsLoggedInResponse } from './types';
 import { saveCookies } from '../../utils/fs';
+import { logger } from '../logger';
 
 export class Steam {
   private steam = new SteamCommunity();
@@ -22,7 +23,7 @@ export class Steam {
     return new Promise((resolve) => {
       this.steam.oAuthLogin(steamguard, token, (error, _, cookies) => {
         if (error) {
-          console.log(error);
+          logger.error(error);
         }
 
         resolve(cookies);
@@ -40,7 +41,7 @@ export class Steam {
             case 'SteamGuard':
             case 'SteamGuardMobile': {
               const isMobile = errorCode === 'SteamGuardMobile';
-              getSteamGuardCode().then(({ code }) => {
+              getSteamGuardCode().then((code) => {
                 this.newLogin({
                   ...accountDetails,
                   [isMobile ? 'twoFactorCode' : 'authCode']: code,
@@ -84,7 +85,7 @@ export class Steam {
 
       this.setCookies(cookies);
     } catch (e) {
-      console.log(e.message);
+      logger.error(e.message);
     }
 
     await this.confirmLogin();
@@ -93,9 +94,9 @@ export class Steam {
   private async confirmLogin() {
     const response = await this.isLoggedIn();
     if (response.success) {
-      console.log('Successfully logged to Steam');
+      logger.log('Successfully logged to Steam');
     } else {
-      console.log('Failed login to Steam: ', response.error);
+      logger.error('Failed login to Steam: ', response.error);
     }
   }
 

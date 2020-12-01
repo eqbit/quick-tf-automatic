@@ -6,6 +6,7 @@ import { offerStateToHumanReadable } from './utils';
 import { convertToTfItem } from '../tf/utils';
 import { TTradeOfferHandlerOptions } from '../controller/types';
 import { ETradeOfferState } from './data';
+import { logger } from '../logger';
 
 export class TradeOfferManager {
   private manager: TradeOfferManagerProvider;
@@ -80,6 +81,6 @@ export class TradeOfferManager {
   };
 
   private handleOfferStateChange = (offer: TTradeOffer) => {
-    console.log(`Offer #${offer.id} changed: ${offerStateToHumanReadable(offer.state)}`);
+    logger.log(`Offer #${offer.id} changed: ${offerStateToHumanReadable(offer.state)}`);
   };
 }

@@ -1,34 +1,30 @@
-import { prompt } from '../../utils/prompt';
+import { prompt } from 'prompts';
 import 'colors';
 
 export const getSteamGuardCode = async () => {
-  return prompt({
-    code: {
-      description: 'Enter Steam Guard code'.green,
-      type: 'string',
-      required: true,
-    },
-  }, 'Invalid input') as Promise<{ code: string }>;
+  const { code } = await prompt({
+    type: 'text',
+    name: 'code',
+    message: 'Enter Steamguard code',
+    validate: (input: string) => input.length >= 4,
+  });
+
+  return code;
 };
 
 export const getSteamAccountDetails = async () => {
-  return prompt({
-    login: {
-      required: true,
-      type: 'string',
-      description: 'Steam login',
-      default: '',
+  return prompt([
+    {
+      type: 'text',
+      name: 'accountName',
+      message: 'Steam login',
+      validate: (input: string) => input.length >= 2,
     },
-    password: {
-      required: true,
-      hidden: true,
-      replace: '*',
-      type: 'string',
-      description: 'Steam password',
-      message: 'hidden',
+    {
+      type: 'text',
+      name: 'password',
+      message: 'Steam password',
+      validate: (input: string) => input.length >= 6,
     },
-  }).then((response: Record<string, string>) => ({
-    accountName: response.login.toLowerCase(),
-    password: response.password,
-  })) as Promise<Record<'accountName' | 'password', string>>;
+  ]);
 };

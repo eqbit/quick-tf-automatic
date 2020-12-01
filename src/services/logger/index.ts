@@ -2,7 +2,7 @@ import 'colors';
 
 export class Logger {
   protected getTime = () =>
-    new Date().toLocaleTimeString();
+    new Date().toLocaleTimeString('ru');
 
   public log = (...args) => {
     console.log(`[${this.getTime()}]`, '[log]'.green, ...args);
