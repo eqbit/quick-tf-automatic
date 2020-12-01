@@ -21,7 +21,7 @@ export const getSteamAccountDetails = async () => {
       validate: (input: string) => input.length >= 2,
     },
     {
-      type: 'text',
+      type: 'password',
       name: 'password',
       message: 'Steam password',
       validate: (input: string) => input.length >= 6,
