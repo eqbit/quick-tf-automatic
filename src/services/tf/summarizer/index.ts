@@ -3,6 +3,7 @@ import { TTfItem } from '../types';
 import { ItemQualitiesByIndex } from '../constants';
 import { TSummarizeBuyOrder, TSummarizeSellOrder } from './types';
 import { TelegramSender } from '../../telegram';
+import { logger } from '../../logger';
 
 export class BpTfSummarizer {
   protected telegram: TelegramSender;
@@ -37,7 +38,7 @@ export class BpTfSummarizer {
     } according to our buy listings) for ${
       this.summarizeCurrency(priceTheyAsk)
     }`;
-    console.log(message);
+    logger.log(message);
     this.telegram.sendMessage(message);
   };
 
@@ -49,7 +50,7 @@ export class BpTfSummarizer {
       rawItemsToBuy,
     }: TSummarizeBuyOrder,
   ) => {
-    console.log(`According to our buy order listings we are ready to pay ${
+    logger.error(`According to our buy order listings we are ready to pay ${
       this.summarizeCurrency(priceWePay)
     } for ${
       this.summarizeItems(rawItemsToBuy)
@@ -73,7 +74,7 @@ export class BpTfSummarizer {
     } according to our sell listings) for ${
       this.summarizeCurrency(priceTheyPay)
     }`;
-    console.log(message);
+    logger.log(message);
     this.telegram.sendMessage(message);
   };
 
@@ -85,7 +86,7 @@ export class BpTfSummarizer {
       priceTheyPay,
     }: TSummarizeSellOrder,
   ) => {
-    console.log(`We asking ${
+    logger.error(`We asking ${
       this.summarizeCurrency(priceWeAsk)
     } for our ${
       this.summarizeItems(rawItemsToSell)

@@ -1,7 +1,9 @@
 import { TUserListing } from '../api/types';
 import { TTfItem } from '../../types';
 import {
-  addRec, addScrap, isCurrency,
+  addRec,
+  addScrap,
+  isCurrency,
   isKey,
   isRec,
   isRef,
@@ -20,7 +22,10 @@ export class BpTfComparator {
     const result: TUserListing[] = [];
 
     theirItems.forEach((theirItem) => {
-      result.push(this.findMatchingListing(buyListings, theirItem));
+      const matchingListing = this.findMatchingListing(buyListings, theirItem);
+      if (matchingListing) {
+        result.push(matchingListing);
+      }
     });
 
     return result;
@@ -36,7 +41,10 @@ export class BpTfComparator {
     const result: TUserListing[] = [];
 
     ourItems.forEach((ourItem) => {
-      result.push(this.findMatchingSellListing(sellListings, ourItem));
+      const matchingListing = this.findMatchingSellListing(sellListings, ourItem);
+      if (matchingListing) {
+        result.push(matchingListing);
+      }
     });
 
     return result;

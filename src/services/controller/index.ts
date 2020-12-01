@@ -13,6 +13,7 @@ import { getSteamid64 } from '../../utils/get-steamid';
 import { Totp } from '../totp';
 import { checkTrade } from '../tfs';
 import { EListingIntent } from '../../types/enums';
+import { logger } from '../logger';
 
 export class Controller {
   private telegram = new TelegramSender({
@@ -87,7 +88,7 @@ export class Controller {
 
   private handleNewTradeOffer = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
     if (rawOffer.isOurOffer) {
-      console.log('Accepting an offer sent by the Owner');
+      logger.log('Accepting an offer sent by the Owner');
       this.acceptOffer(rawOffer);
       return;
     }
@@ -95,12 +96,12 @@ export class Controller {
       .sendMessage(`Received a new trade offer from https://backpack.tf/profiles/${getSteamid64(rawOffer.partner)}`);
 
     if (this.isInEscrow(rawOffer)) {
-      console.log('Escrow is not turned off. Skipping...');
+      logger.error('Escrow is not turned off. Skipping...');
       return;
     }
 
     if (!ourItems.length || !theirItems.length) {
-      console.log('A gift offer. Skipping...');
+      logger.error('A gift offer. Skipping...');
       return;
     }
 
@@ -108,7 +109,7 @@ export class Controller {
     const rawItemsToSell = this.tfComparator.extractItemsFromOffer(ourItems);
 
     if (rawItemsToBuy.length && rawItemsToSell.length) {
-      console.log('Offer contains items from both sides. Skipping...');
+      logger.error('Offer contains items from both sides. Skipping...');
       return;
     }
 
@@ -130,7 +131,7 @@ export class Controller {
       return this.processBuyOrder({ ourItems, theirItems, rawOffer });
     }
 
-    console.log('Offer doesn\'t math any criteria. Skipping...');
+    logger.error('Offer doesn\'t math any criteria. Skipping...');
   };
 
   private processBuyOrder = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
@@ -162,7 +163,7 @@ export class Controller {
     });
 
     if (containsExtraItems) {
-      console.log('Offer contains items we have no buy orders for. Skipping...');
+      logger.error('Offer contains items we have no buy orders for. Skipping...');
       return;
     }
 
@@ -186,9 +187,9 @@ export class Controller {
       });
 
       this.acceptOffer(rawOffer).then(() => {
-        console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
+        logger.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
       }).catch((error) => {
-        console.log(`Error accepting offer #${rawOffer.id}: `, error);
+        logger.error(`Error accepting offer #${rawOffer.id}: `, error);
       });
     } else {
       this.bpTfSummarizer.failBuyOrderMessage({
@@ -204,7 +205,7 @@ export class Controller {
     const rawOurCurrency = this.tfComparator.extractCurrencyFromOffer(ourItems);
 
     if (rawOurCurrency.metal || rawOurCurrency.keys) {
-      console.log('Unexpectedly asking currency from our side. Skipping...');
+      logger.error('Unexpectedly asking currency from our side. Skipping...');
       return;
     }
 
@@ -237,7 +238,7 @@ export class Controller {
     });
 
     if (containsExtraItems) {
-      console.log('Trying to buy an item we don\'t sell. Skipping...');
+      logger.error('Trying to buy an item we don\'t sell. Skipping...');
       return;
     }
 
@@ -261,9 +262,9 @@ export class Controller {
       });
 
       this.acceptOffer(rawOffer).then(() => {
-        console.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
+        logger.log(`Offer #${rawOffer.id} successfully accepted, additional confirmation needed`);
       }).catch((error) => {
-        console.log(`Error accepting offer #${rawOffer.id}: `, error);
+        logger.error(`Error accepting offer #${rawOffer.id}: `, error);
       });
     } else {
       this.bpTfSummarizer.failSellOrderMessage({

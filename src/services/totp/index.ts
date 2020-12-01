@@ -4,6 +4,7 @@ import { TTotpConstructorOptions } from './types';
 import { Steam } from '../steam';
 import { getNowInSeconds } from '../../utils/time';
 import { CONFIRMATION_POLL_INTERVAL } from '../../constants';
+import { logger } from '../logger';
 
 export class Totp {
   protected secret = '';
@@ -19,12 +20,12 @@ export class Totp {
     SteamTotp.getConfirmationKey(this.secret, getNowInSeconds(), tag);
 
   protected accept = (confirmation) => {
-    console.log(`Accepting confirmation ${confirmation.id}`);
+    logger.log(`Accepting confirmation ${confirmation.id}`);
 
     const time = getNowInSeconds();
     confirmation.respond(time, this.getTotpKey('allow'), true, (err) => {
       if (err) {
-        console.log(`Error accepting confirmation ${confirmation.id}.`);
+        logger.error(`Error accepting confirmation ${confirmation.id}.`);
         return;
       }
 
@@ -36,13 +37,13 @@ export class Totp {
         this.offerIds[creator] = null;
       }
 
-      console.log(`Confirmation ${confirmation.id} accepted`);
+      logger.log(`Confirmation ${confirmation.id} accepted`);
     });
   };
 
   public enable = () => {
     if (!this.secret) {
-      console.log('You must provide the identity_secret to activate automatic confirmations');
+      logger.error('You must provide the identity_secret to activate automatic confirmations');
       return;
     }
 
