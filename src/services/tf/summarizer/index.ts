@@ -19,7 +19,7 @@ export class BpTfSummarizer {
     return items.map((item) => `${
       item.particleEffect
         ? `${item.particleEffect} `
-        : `${ItemQualitiesByIndex[item.quality]}`
+        : `${ItemQualitiesByIndex[item.quality]} `
     }${item.name}`).join(', ');
   };
 

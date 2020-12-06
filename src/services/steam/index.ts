@@ -58,8 +58,11 @@ export class Steam {
           return;
         }
 
+        const steamid = steamguard.split('||')[0];
+
         saveConfig({
           ...configData,
+          steamid,
           steamguard,
           oAuthToken,
         }).then(() => {

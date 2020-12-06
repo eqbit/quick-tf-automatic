@@ -20,12 +20,12 @@ export class Totp {
     SteamTotp.getConfirmationKey(this.secret, getNowInSeconds(), tag);
 
   protected accept = (confirmation) => {
-    logger.log(`Accepting confirmation ${confirmation.id}`);
+    logger.log(`Accepting confirmation #${confirmation.id}`);
 
     const time = getNowInSeconds();
     confirmation.respond(time, this.getTotpKey('allow'), true, (err) => {
       if (err) {
-        logger.error(`Error accepting confirmation ${confirmation.id}.`);
+        logger.error(`Error accepting confirmation #${confirmation.id}.`, err.message);
         return;
       }
 
@@ -37,7 +37,7 @@ export class Totp {
         this.offerIds[creator] = null;
       }
 
-      logger.log(`Confirmation ${confirmation.id} accepted`);
+      logger.log(`Confirmation #${confirmation.id} accepted`);
     });
   };
 

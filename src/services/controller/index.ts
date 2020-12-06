@@ -143,6 +143,8 @@ export class Controller {
     const priceTheyAsk = this.tfComparator.extractCurrencyFromOffer(ourItems);
     const rawItemsToBuy = this.tfComparator.extractItemsFromOffer(theirItems);
 
+    const currencyTheyAdd = this.tfComparator.extractCurrencyFromOffer(theirItems);
+
     const priceWePay = {
       keys: 0,
       metal: 0,
@@ -167,13 +169,21 @@ export class Controller {
       return;
     }
 
+    const finalMetalTheyAsk = Math.round(
+      (priceTheyAsk.metal - (currencyTheyAdd.metal || 0)) * 100,
+    ) / 100;
+
     if (
       priceTheyAsk.keys <= priceWePay.keys
-      && priceTheyAsk.metal <= priceWePay.metal
+      && (!currencyTheyAdd.metal || currencyTheyAdd.metal < 1)
+      && finalMetalTheyAsk <= priceWePay.metal
     ) {
       this.bpTfSummarizer.successBuyOrderMessage({
         id: rawOffer.id,
-        priceTheyAsk,
+        priceTheyAsk: {
+          ...priceTheyAsk,
+          metal: finalMetalTheyAsk,
+        },
         priceWePay,
         rawItemsToBuy,
       });
@@ -194,7 +204,10 @@ export class Controller {
     } else {
       this.bpTfSummarizer.failBuyOrderMessage({
         id: rawOffer.id,
-        priceTheyAsk,
+        priceTheyAsk: {
+          ...priceTheyAsk,
+          metal: finalMetalTheyAsk,
+        },
         priceWePay,
         rawItemsToBuy,
       });
@@ -202,9 +215,9 @@ export class Controller {
   };
 
   private processSellOrder = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
-    const rawOurCurrency = this.tfComparator.extractCurrencyFromOffer(ourItems);
+    const currencyTheyAdd = this.tfComparator.extractCurrencyFromOffer(ourItems);
 
-    if (rawOurCurrency.metal || rawOurCurrency.keys) {
+    if (currencyTheyAdd.metal >= 1 || currencyTheyAdd.keys) {
       logger.error('Unexpectedly asking currency from our side. Skipping...');
       return;
     }
@@ -242,13 +255,21 @@ export class Controller {
       return;
     }
 
+    const finalMetalTheyPay = Math.round(
+      (priceTheyPay.metal - (currencyTheyAdd.metal || 0)) * 100,
+    ) / 100;
+
     if (
       priceTheyPay.keys >= priceWeAsk.keys
-      && priceTheyPay.metal >= priceWeAsk.metal
+      && (!currencyTheyAdd.metal || currencyTheyAdd.metal < 1)
+      && finalMetalTheyPay >= priceWeAsk.metal
     ) {
       this.bpTfSummarizer.successSellOrderMessage({
         id: rawOffer.id,
-        priceTheyPay,
+        priceTheyPay: {
+          ...priceTheyPay,
+          metal: finalMetalTheyPay,
+        },
         priceWeAsk,
         rawItemsToSell,
       });
@@ -269,7 +290,10 @@ export class Controller {
     } else {
       this.bpTfSummarizer.failSellOrderMessage({
         id: rawOffer.id,
-        priceTheyPay,
+        priceTheyPay: {
+          ...priceTheyPay,
+          metal: finalMetalTheyPay,
+        },
         priceWeAsk,
         rawItemsToSell,
       });
@@ -279,7 +303,6 @@ export class Controller {
   protected acceptOffer = async (rawOffer: TTradeOffer) => {
     return this.manager.acceptOffer(rawOffer).then(() => {
       this.totp.addOffer(rawOffer.id);
-      this.totp.check();
     });
   };
 }

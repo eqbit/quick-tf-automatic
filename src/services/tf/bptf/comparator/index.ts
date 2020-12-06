@@ -13,8 +13,11 @@ import {
 export class BpTfComparator {
   public findMatchingListing = (listings: TUserListing[], item: TTfItem) => {
     return listings.find((listing) => {
-      return listing?.item?.name === `${item.particleEffect} ${item.name}`
-        && listing.item.quality === item.quality;
+      return listing.item.quality === item.quality
+        && (
+          listing?.item?.name === `${item.particleEffect} ${item.name}`
+          || listing?.item?.name === item.name
+        );
     });
   };
 

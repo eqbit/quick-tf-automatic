@@ -17,7 +17,7 @@ export class TelegramSender {
   constructor(options: IConstructorOptions) {
     this.botApiKey = options.botApiKey;
     this.channelName = options.channelName;
-    this.bot = new TelegramBot(this.botApiKey, { polling: true });
+    this.bot = new TelegramBot(this.botApiKey);
   }
 
   public async sendMessage(message: string): Promise<void> {
