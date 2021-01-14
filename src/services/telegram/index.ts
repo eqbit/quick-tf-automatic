@@ -20,9 +20,9 @@ export class TelegramSender {
     this.bot = new TelegramBot(this.botApiKey);
   }
 
-  public async sendMessage(message: string): Promise<void> {
+  public sendMessage(message: string) {
     try {
-      await this.bot.sendMessage(this.channelName, message, { disable_web_page_preview: true });
+      this.bot.sendMessage(this.channelName, message, { disable_web_page_preview: true });
     } catch (err) {
       console.error('Error caught in sendMessage: ', err.message);
     }

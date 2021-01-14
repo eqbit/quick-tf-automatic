@@ -2,7 +2,7 @@ import { TradeOfferManager } from '../trade-offer-manager';
 import { Steam } from '../steam';
 import { TGetUserListingsResponse } from '../tf/bptf/api/types';
 import { BpTfApi } from '../tf/bptf/api';
-import { HEARTBEAT_INTERVAL, LISTINGS_UPDATE_INTERVAL } from '../../constants';
+import { ENABLE_HEARTBEAT, HEARTBEAT_INTERVAL, LISTINGS_UPDATE_INTERVAL } from '../../constants';
 import { TTradeOfferHandlerOptions } from './types';
 import { BpTfComparator } from '../tf/bptf/comparator';
 import { BpTfSummarizer } from '../tf/summarizer';
@@ -58,11 +58,13 @@ export class Controller {
         this.updateUserListings();
       }, LISTINGS_UPDATE_INTERVAL);
 
-      this.heartbeat().then(() => {
-        setInterval(() => {
-          this.heartbeat();
-        }, HEARTBEAT_INTERVAL);
-      });
+      if (ENABLE_HEARTBEAT) {
+        this.heartbeat().then(() => {
+          setInterval(() => {
+            this.heartbeat();
+          }, HEARTBEAT_INTERVAL);
+        });
+      }
     });
   };
 
@@ -89,9 +91,9 @@ export class Controller {
   private handleNewTradeOffer = ({ ourItems, theirItems, rawOffer }: TTradeOfferHandlerOptions) => {
     if (rawOffer.isOurOffer) {
       logger.log('Accepting an offer sent by the Owner');
-      this.acceptOffer(rawOffer);
-      return;
+      return this.acceptOffer(rawOffer);
     }
+
     this.telegram
       .sendMessage(`Received a new trade offer from https://backpack.tf/profiles/${getSteamid64(rawOffer.partner)}`);
 
@@ -170,7 +172,7 @@ export class Controller {
     }
 
     const finalMetalTheyAsk = Math.round(
-      (priceTheyAsk.metal - (currencyTheyAdd.metal || 0)) * 100,
+      (priceTheyAsk.metal - (currencyTheyAdd.metal || 0) - 0.01) * 100,
     ) / 100;
 
     if (
@@ -256,7 +258,7 @@ export class Controller {
     }
 
     const finalMetalTheyPay = Math.round(
-      (priceTheyPay.metal - (currencyTheyAdd.metal || 0)) * 100,
+      (priceTheyPay.metal - (currencyTheyAdd.metal || 0) + 0.01) * 100,
     ) / 100;
 
     if (
